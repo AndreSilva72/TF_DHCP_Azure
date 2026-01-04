@@ -1,0 +1,39 @@
+- name: Configurar servidor DHCP
+  hosts: dhcp
+  become: yes
+
+  tasks:
+    - name: Atualizar cache apt
+      apt:
+        update_cache: yes
+
+    - name: Instalar isc-dhcp-server
+      apt:
+        name: isc-dhcp-server
+        state: present
+
+    - name: Configurar interface DHCP
+      copy:
+        dest: /etc/default/isc-dhcp-server
+        content: |
+          INTERFACESv4="eth0"
+
+    - name: Configurar dhcpd.conf
+      copy:
+        dest: /etc/dhcp/dhcpd.conf
+        content: |
+          default-lease-time 600;
+          max-lease-time 7200;
+          authoritative;
+
+          subnet 10.1.1.0 netmask 255.255.255.0 {
+            range 10.1.1.100 10.1.1.200;
+            option routers 10.1.1.1;
+            option domain-name-servers 8.8.8.8, 8.8.4.4;
+          }
+
+    - name: Reiniciar serviço DHCP
+      service:
+        name: isc-dhcp-server
+        state: restarted
+        enabled: yes
