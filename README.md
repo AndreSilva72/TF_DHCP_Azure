@@ -64,3 +64,4 @@ Testes
   O cliente obtém endereço IP automaticamente via DHCP
   A comunicação é validada através de testes de rede (ex.: ping)
 
+
